@@ -1,0 +1,8 @@
+{
+    "python.testing.pytestArgs": [
+        "test/",
+        "test/integration_py"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
