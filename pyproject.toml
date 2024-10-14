@@ -16,6 +16,9 @@ classifiers = [
 
 # pyproject.toml
 [tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
 minversion = "6.0"
 addopts = "-ra -q"
 testpaths = [
