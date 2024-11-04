@@ -1,5 +1,5 @@
 import pytest
-from datfile import *
+from izmiran.datfile import *
 
 def test_int_datfile_open_read_file():
     datfile = DatFile()

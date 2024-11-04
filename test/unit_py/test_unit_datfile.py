@@ -1,5 +1,5 @@
 import pytest
-from datfile import *
+from izmiran.datfile import *
 
 def test_unit_parse_record_from_line_happy_flow():
     result = DatFile.parse_record_from_line("0\t1\t2")
