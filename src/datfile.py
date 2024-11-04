@@ -51,11 +51,27 @@ class DatFile(object):
     @staticmethod
     def parse_string_val_to_float(val: str) -> float:
         '''
-        Convert string value to float falue
+        Convert string value to float value
         '''
         return float(val)
+    
+    @staticmethod
+    def build_line_from_record(val_list : list) -> str:
+        '''
+        Build line for *.dat file from list
+        '''
+        out_str = ""
 
-    def parse_from(self, filepath: str, has_header: bool=False, reject_columns: list=[]) -> None:
+        for val in val_list:
+            out_str += val
+            out_str += '\n'
+
+        out_str = out_str[:-1]
+        out_str += '\n'
+
+        return out_str
+
+    def read(self, filepath: str, has_header: bool=False, reject_columns: list=[]) -> None:
         '''
         Parse *.dat file
         '''
@@ -67,6 +83,8 @@ class DatFile(object):
         except UnicodeDecodeError:
             with open(filepath, 'r', encoding='utf-16') as input_file:
                 lines = input_file.readlines()
+        except:
+            raise DatFileError("Cannot open file")
 
         for idx, line in enumerate(lines):
             if has_header and idx == 0:
@@ -75,6 +93,24 @@ class DatFile(object):
 
             line_list = DatFile.parse_record_from_line(line, reject_columns)
             self.data_list_of_records.append(line_list)
+
+    def write(self, filepath: str, is_include_header: str = False) -> None:
+        '''
+        Write records to *.dat file
+        '''
+        if self.get_records_count() == 0:
+            raise NoDataInObjectError("No data in object for writing in file")
+        
+        header = None
+        if is_include_header:
+            header = self.get_columns_names()
+
+        with open(filepath, 'w', encoding='utf-8') as out_f:
+            if header is not None:
+                out_f.write(DatFile.build_line_from_record(header))
+        
+            for record in self.get_records():
+                out_f.write(DatFile.build_line_from_record(record))
 
     def get_columns_count(self) -> int:
         '''
