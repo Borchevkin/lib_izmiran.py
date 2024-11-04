@@ -49,68 +49,75 @@ class DatFile(object):
         return line_list
     
     @staticmethod
-    def parse_string_val_to_float(val: str) -> float:
+    def record_to_float(record: list) -> list:
         '''
-        Convert string value to float value
+        Convert record which stores is string format to float format
         '''
-        return float(val)
+        result = list()
+
+        for val in record:
+            if type(val) != float:
+                result.append(float(val))
+            else:
+                result.append(val)
+
+        return result
     
     @staticmethod
-    def build_line_from_record(val_list : list) -> str:
+    def record_to_str(record: list) -> list:
         '''
-        Build line for *.dat file from list
+        Convert record from float or int representation to string representation of values
+        '''
+
+        result = list()
+
+        for val in record:
+            if type(val) != str:
+                result.append(str(val))
+            else:
+                result.append(val)
+        
+        return result
+    
+    @staticmethod
+    def build_line_from_record(record : list) -> str:
+        '''
+        Build line for *.dat file from record
         '''
         out_str = ""
 
-        for val in val_list:
+        for val in record:
             out_str += val
-            out_str += '\n'
+            out_str += '\t'
 
         out_str = out_str[:-1]
         out_str += '\n'
 
         return out_str
-
-    def read(self, filepath: str, has_header: bool=False, reject_columns: list=[]) -> None:
+    
+    @staticmethod
+    def calc_avg_for_records(records: list) -> list:
         '''
-        Parse *.dat file
+        Calc average for list of records
+
+        Return 
         '''
+        if len(records) == 0:
+            raise NoDataInObjectError("No records in list for averaging")
 
-        lines = None
-        try:
-            with open(filepath, "r", encoding='utf-8') as input_file:
-                lines = input_file.readlines()
-        except UnicodeDecodeError:
-            with open(filepath, 'r', encoding='utf-16') as input_file:
-                lines = input_file.readlines()
-        except:
-            raise DatFileError("Cannot open file")
+        result = list()
+        for _ in records[0]:
+            result.append(0.0)
 
-        for idx, line in enumerate(lines):
-            if has_header and idx == 0:
-                column_names = DatFile.parse_record_from_line(line, reject_columns)
-                self.set_columns_names(column_names)
+        for record in records:
+            record_in_floats = DatFile.record_to_float(record)
+            for idx, val in enumerate(record_in_floats):
+                result[idx] += val
 
-            line_list = DatFile.parse_record_from_line(line, reject_columns)
-            self.data_list_of_records.append(line_list)
+        for idx, _ in enumerate(result):
+            result[idx] /= len(records)
 
-    def write(self, filepath: str, is_include_header: str = False) -> None:
-        '''
-        Write records to *.dat file
-        '''
-        if self.get_records_count() == 0:
-            raise NoDataInObjectError("No data in object for writing in file")
-        
-        header = None
-        if is_include_header:
-            header = self.get_columns_names()
-
-        with open(filepath, 'w', encoding='utf-8') as out_f:
-            if header is not None:
-                out_f.write(DatFile.build_line_from_record(header))
-        
-            for record in self.get_records():
-                out_f.write(DatFile.build_line_from_record(record))
+        return DatFile.record_to_str(result)
 
     def get_columns_count(self) -> int:
         '''
@@ -160,6 +167,9 @@ class DatFile(object):
         return self.data_list_of_records[index].copy()
     
     def add_record(self, record: list) -> None:
+        '''
+        Add record to DatFile object instance
+        '''
         if self.get_columns_count() == 0:
             pass
         else:
@@ -168,4 +178,87 @@ class DatFile(object):
         
         self.data_list_of_records.append(record.copy())
 
+    def read(self, filepath: str, has_header: bool=False, reject_columns: list=[]) -> None:
+        '''
+        Parse *.dat file into Datfile instance
+        '''
+
+        lines = None
+        try:
+            with open(filepath, "r", encoding='utf-8') as input_file:
+                lines = input_file.readlines()
+        except UnicodeDecodeError:
+            with open(filepath, 'r', encoding='utf-16') as input_file:
+                lines = input_file.readlines()
+        except:
+            raise DatFileError("Cannot open file")
+
+        column_names = None
+        for idx, line in enumerate(lines):
+            if has_header and idx == 0:
+                column_names = DatFile.parse_record_from_line(line, reject_columns)
+                continue
+
+            line_list = DatFile.parse_record_from_line(line, reject_columns)
+            self.data_list_of_records.append(line_list)
+        
+        if has_header:
+            self.set_columns_names(column_names)
+
+    def write(self, filepath: str, is_include_header: str = False) -> None:
+        '''
+        Write records of Datfile instance to *.dat file
+        '''
+        if self.get_records_count() == 0:
+            raise NoDataInObjectError("No data in object for writing in file")
+        
+        header = None
+        if is_include_header:
+            header = self.get_columns_names()
+
+        with open(filepath, 'w', encoding='utf-8') as out_f:
+            if header is not None:
+                out_f.write(DatFile.build_line_from_record(header))
+        
+            for record in self.get_records():
+                out_f.write(DatFile.build_line_from_record(record))
+
+    def avg(self, period:  int, start_idx: int = None, end_idx: int = None) -> 'DatFile':
+        '''
+        Calculate average for records.
+
+        Using full-period notation [start_idx ; end_idx)
+        
+        Warning: all records which cannot be calculated by period at the end will be left
+        '''
+        if period == 0:
+            raise ValueError("Period cannot be 0")
+        
+        if period > self.get_records_count():
+            raise RecordIndexError("Period exceeds records count")
+        
+        if (start_idx != None) and (start_idx > self.get_records_count() - 1):
+            raise RecordIndexError("Start index exceeds records count")
+        
+        if (end_idx != None) and (end_idx > self.get_records_count()):
+            raise RecordIndexError("End index exceeds records count")
+
+        if (start_idx != None) and (end_idx != None) and (start_idx > end_idx):
+            raise RecordIndexError("Start index exceeds end index")
+
+        remain_count = self.get_records_count()
+        start_idx = 0 if start_idx == None else start_idx
+        curr_idx = start_idx
+        end_idx = self.get_records_count() if end_idx == None else end_idx
+
+        avg_datfile = DatFile()
+
+        while ((remain_count >= period) and ((curr_idx + period) <= end_idx)):
+            avg_record = DatFile.calc_avg_for_records(self.get_records()[curr_idx : curr_idx + period])
+            avg_datfile.add_record(avg_record)
+
+            remain_count -= period
+            curr_idx += period
+
+        return avg_datfile
 

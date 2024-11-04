@@ -45,9 +45,6 @@
 
 SHELL := /bin/bash
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-THREADS_NUM = $(shell nproc)
-BUILD_OPTS_RELEASE = -jTHREADS_NUM
-BUILD_OPTS_DEBUG = -j1
 
 # *****************************************************************************
 # * TARGETS - MANDATORY
@@ -100,39 +97,38 @@ check_security:
 # Build project in debug configuration
 .PHONY: build_debug
 build_debug:
-	cmake -S ROOT_DIR -B ROOT_DIR/artifacts/build/debug
-	cmake --build ROOT_DIR/artifacts/build/debug
+	$(error Target not implemented)
 
 
 # Build project in release configuraiton
 .PHONY: build_release
 build_release:
-	cmake -S ROOT_DIR -B ROOT_DIR/artifacts/build/release
-	cmake --build ROOT_DIR/artifacts/build/release
+	$(error Target not implemented)
 
 
 # Run unit tests, generate a test report and a gcov report into ./artifacts/reports/test_unit/
 .PHONY: test_unit
 test_unit: build_debug
-	cd ROOT_DIR/artifacts/build/debug && ctest --output-on-failure
+	pytest
 
 
 # Run integration testing and generate artifacts into ./artifacts/reports/test_integration/
 .PHONY: test_integration
 test_integration: build_debug
-	cd ROOT_DIR/artifacts/build/debug && ctest --output-on-failure
+	pytest
 
 
 # Test E2E and generate artifacts into ./artifacts/reports/test_e2e/
 .PHONY: test_e2e
 test_e2e: build_debug
-	$(error Target not implemented)
+	$(info Target not implemented)
 
 
 # Build docs and generate a docs bundle into ./artifacts/docs
 .PHONY: docs_build
 docs_buld:
 	$(error Target not implemented)
+	#python -m pydoc -w my_module
 
 
 # Run debug workflow
@@ -150,15 +146,6 @@ all_release:
 # *****************************************************************************
 # * TARGETS - PROJECT-SPECIFIC
 # *****************************************************************************
-
-.PHONY: run_debug
-run_debug: build_debug
-	cd ROOT_DIR/artifacts/build/debug && ./project
-
-
-.PHONY: install
-install:
-	cp ROOT_DIR/artifacts/build/release/project /usr/local/sbin/project
 
 # *****************************************************************************
 # * END OF MAKEFILE
