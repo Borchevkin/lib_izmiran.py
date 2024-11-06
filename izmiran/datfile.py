@@ -4,9 +4,6 @@ class DatFileError(Exception):
 class RecordIndexError(DatFileError):
     pass
 
-class NoColumnsNameError(DatFileError):
-    pass
-
 class NoDataInObjectError(DatFileError):
     pass
 
@@ -118,6 +115,14 @@ class DatFile(object):
             result[idx] /= len(records)
 
         return DatFile.record_to_str(result)
+    
+    @staticmethod
+    def float_from_str(val_in_str: str) -> float:
+        '''
+        Convert string to float
+        '''
+        return float(val_in_str)
+    
 
     def get_columns_count(self) -> int:
         '''
@@ -132,15 +137,13 @@ class DatFile(object):
         '''
         Get columns names.
         '''
-        if len(self.columns_names) == 0:
-            raise NoColumnsNameError("No columns names")
         return self.columns_names.copy()
 
     def set_columns_names(self, names: list) -> None:
         '''
         Set column names.
         '''
-        if self.get_columns_count() != len(names):
+        if self.get_columns_count() != len(names) and len(names) != 0:
             raise InvalidColumnError("Invalid column count")
 
         self.columns_names = names.copy()
@@ -177,6 +180,15 @@ class DatFile(object):
                 raise InvalidColumnError("Invalid column count")
         
         self.data_list_of_records.append(record.copy())
+
+
+    def add_records(self, records: list) -> None:
+        '''
+        Add records to DatFile object instance
+        '''
+        for record in records:
+            self.add_record(record)
+
 
     def read(self, filepath: str, has_header: bool=False, reject_columns: list=[]) -> None:
         '''
@@ -227,7 +239,7 @@ class DatFile(object):
         '''
         Calculate average for records.
 
-        Using full-period notation [start_idx ; end_idx)
+        Using half-period notation [start_idx ; end_idx)
         
         Warning: all records which cannot be calculated by period at the end will be left
         '''
@@ -261,4 +273,39 @@ class DatFile(object):
             curr_idx += period
 
         return avg_datfile
+    
+    def filter(self, column_idx: int, min_val:float=None, max_val:float=None) -> 'DatFile':
+        '''
+        Filter records by column value and return new DatFile object.
+        '''
+        if column_idx >= self.get_columns_count() - 1 or column_idx < 0:
+            raise NoColumnError("Column index exceeds columns count")
+        
+        filtered = DatFile()
+        
+        for record in self.get_records():
+            if (min_val != None) and (DatFile.float_from_str(record[column_idx]) < min_val):
+                continue
+            
+            if (max_val != None) and (DatFile.float_from_str(record[column_idx]) > max_val):
+                continue
+
+            filtered.add_record(record)
+        
+        return filtered
+    
+    def reverse(self) -> 'DatFile':
+        '''
+        Reverse records order and return new DatFile object.
+        '''
+        reversed_datfile = DatFile()
+        reversed_datfile.data_list_of_records = self.data_list_of_records[::-1]
+
+        reversed_datfile.set_columns_names(self.get_columns_names())
+
+        return reversed_datfile
+        
+            
+            
+            
 
