@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.1.2] - 2024-11-07
+
+### Added
+
+- CICD: add `publish.yml` for Github Actions which publish package to PyPI when it released.
+
+### Changed
+
+- DatFile: change encoding from `utf-8` to `utf-8-sig`.
+
+
 ## [0.1.1] - 2024-11-07
 
 ### Added

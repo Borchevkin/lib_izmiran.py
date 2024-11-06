@@ -45,15 +45,16 @@ make all_release
 
 Go to [pyproject.toml](./pyproject.toml) and [setup.py](./setup.py) and update `version`.
 
-### Release Process - Step 3 - Check installation of target
+
+### Release Process - Step 3 - Update CHANGELOG.md
+
+Go to [CHANGELOG.md](./CHANGELOG.md) and update it.
+
+### Release Process - Step 4 - Check installation of target
 
 ```bash
 $ make install
 ```
-
-### Release Process - Step 4 - Update CHANGELOG.md
-
-Go to `CHANGELOG.md` and update it.
 
 ### Release Process - Step 5 - Update package on PyPI
 
