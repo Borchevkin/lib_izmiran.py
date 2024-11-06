@@ -115,3 +115,17 @@ def test_unit_add_record():
     
     assert 1 == datfile.get_records_count(), "Invalid records count after adding one record"
     assert ["0","1","2"] == datfile.get_record(0), "Wrong record value" 
+
+def test_unit_add_records():
+    datfile = DatFile()
+
+    datfile.add_records([["0","1","2"],["0","1","3"]])
+    assert 2 == datfile.get_records_count(), "Invalid records count after adding two records"
+    assert ["0","1","2"] == datfile.get_record(0), "Wrong record value" 
+    assert ["0","1","3"] == datfile.get_record(1), "Wrong record value"
+        
+
+def test_unit_float_from_str():
+    assert 1.0 == DatFile.float_from_str("1.0"), "Wrong float value"
+    assert 1.0 == DatFile.float_from_str("1"), "Wrong float value"
+    assert 1.0 == DatFile.float_from_str("1.00000000000000000000000000000000000000000000000000000000000000000000000000000000000"), "Wrong float value"

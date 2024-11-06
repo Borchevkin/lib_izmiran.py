@@ -228,3 +228,35 @@ def test_int_datfile_avg_start_not_0():
     ]
 
     assert avg_test_records == datfile_avg.get_records()
+
+def test_int_datfile_reverse():
+    datfile_main = DatFile()
+
+    test_records = [
+        ["3.0", "3.0", "4.0"],
+        ["4.0", "4.0", "5.0"],
+        ["5.0", "5.0", "6.0"],
+        ["42.0", "42.0", "42.0"]
+    ]
+
+    datfile_main.add_records(test_records)
+
+    reversed = datfile_main.reverse()
+    assert reversed.get_records() == test_records[::-1], "Wrong reverse order"
+    
+def test_int_datfile_filter():
+    datfile_main = DatFile()
+
+    test_records = [
+        ["3.0", "3.0", "4.0"],
+        ["4.0", "4.0", "5.0"],
+        ["5.0", "5.0", "6.0"],
+        ["42.0", "42.0", "42.0"]
+    ]
+
+    datfile_main.add_records(test_records)
+
+    filtered = datfile_main.filter(0, min_val=3.5,max_val=5.5)
+
+    assert filtered.get_records() == test_records[1:-1], "Wrong filter"
+     
