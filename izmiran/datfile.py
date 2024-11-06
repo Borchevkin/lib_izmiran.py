@@ -197,7 +197,7 @@ class DatFile(object):
 
         lines = None
         try:
-            with open(filepath, "r", encoding='utf-8') as input_file:
+            with open(filepath, "r", encoding='utf-8-sig') as input_file:
                 lines = input_file.readlines()
         except UnicodeDecodeError:
             with open(filepath, 'r', encoding='utf-16') as input_file:

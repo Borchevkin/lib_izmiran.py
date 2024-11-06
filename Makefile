@@ -53,20 +53,20 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 # Init repository / project
 .PHONY: init
 init: clean
-	mkdir -p ROOT_DIR/artifacts/build/debug
-	mkdir -p ROOT_DIR/artifacts/build/release
-	mkdir -p ROOT_DIR/artifacts/reports/check_style
-	mkdir -p ROOT_DIR/artifacts/reports/check_static
-	mkdir -p ROOT_DIR/artifacts/reports/check_security
-	mkdir -p ROOT_DIR/artifacts/reports/test_unit
-	mkdir -p ROOT_DIR/artifacts/reports/test_integration
-	mkdir -p ROOT_DIR/artifacts/reports/test_e2e
+	mkdir -p ${ROOT_DIR}/artifacts/build/debug
+	mkdir -p ${ROOT_DIR}/artifacts/build/release
+	mkdir -p ${ROOT_DIR}/artifacts/reports/check_style
+	mkdir -p ${ROOT_DIR}/artifacts/reports/check_static
+	mkdir -p ${ROOT_DIR}/artifacts/reports/check_security
+	mkdir -p ${ROOT_DIR}/artifacts/reports/test_unit
+	mkdir -p ${ROOT_DIR}/artifacts/reports/test_integration
+	mkdir -p ${ROOT_DIR}/artifacts/reports/test_e2e
 
 
 # Clean
 .PHONY: clean
 clean:
-	rm -rf ROOT_DIR/artifacts
+	rm -rf ${ROOT_DIR}/artifacts
 
 
 # Apply codestyle to all codebase
@@ -149,6 +149,7 @@ all_release:
 
 .PHONY: install
 install:
+	rm -rf ${ROOT_DIR}/dist
 	python setup.py sdist
 	pip install .
 
