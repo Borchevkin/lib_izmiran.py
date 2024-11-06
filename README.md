@@ -45,9 +45,10 @@ make all_release
 
 Go to [pyproject.toml](./pyproject.toml) and [setup.py](./setup.py) and update `version`.
 
+
 ### Release Process - Step 3 - Update CHANGELOG.md
 
-Go to `CHANGELOG.md` and update it.
+Go to [CHANGELOG.md](./CHANGELOG.md) and update it.
 
 ### Release Process - Step 4 - Check installation of target
 
