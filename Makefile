@@ -152,6 +152,10 @@ install:
 	python setup.py sdist
 	pip install .
 
+.PHONY: publish
+publish: install
+	python3 -m twine upload --repository pypi dist/*
+
 # *****************************************************************************
 # * END OF MAKEFILE
 # *****************************************************************************

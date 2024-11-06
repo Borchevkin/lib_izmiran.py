@@ -2,7 +2,7 @@
 
 ## Description
 
-IZMIRAN library for common tasks
+IZMIRAN library for common tasks.
 
 ## Documents
 
@@ -25,13 +25,17 @@ No additional documents are provided.
 $ pip install izmiran
 ```
 
+***API is liquid due to development process. Use exact versioning!***
+
 ## Developing Process
 
 * Used feature-flow for developing
 
 ## Release Process
 
-### Release Process - Steo 0 - Verify and validate codebase
+For preparing release needs only ti create 
+
+### Release Process - Step 1 - Verify and validate codebase
 
 Run:
 
@@ -39,15 +43,22 @@ Run:
 make all_release
 ```
 
-### Release Process - Step 1 - Update version
+### Release Process - Step 2 - Check installation of target
 
-Go to `setup,py` and update `version`
+```bash
+$ make install
+```
 
-### Release Process - Step 2 - Update CHANGELOG.md
+### Release Process - Step 3 - Update version
+
+Go to [pyproject.toml](./pyproject.toml) and [setup.py](./setup.py) and update `version`.
+
+### Release Process - Step 4 - Update CHANGELOG.md
 
 Go to `CHANGELOG.md` and update it.
 
-### Check installation of target
+### Release Process - Step 5 - Update package on PyPI
 
 ```bash
-$ python setup.py sdist
+make publish
+```
